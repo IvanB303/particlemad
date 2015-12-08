@@ -189,6 +189,19 @@
         
         
       }
+      function calcAngle(inputx, inputy){
+        //calculate distance from centre
+        var inputx,inputy,xbit,ybit;
+        var angle;
+        
+        xbit=(inputx-Fcentre.Xo);
+        ybit=(inputy-Fcentre.Yo);
+        
+        distance=Math.atan2(ybit,xbit);
+        
+        return angle;
+        
+      }
     </script>
   </body>
 </html>      

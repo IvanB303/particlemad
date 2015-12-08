@@ -69,11 +69,13 @@
           oldY = myArraySquares[i].y;
           velX = myArraySquares[i].vx; // * time / 1000;
           velY = myArraySquares[i].vy; // * time / 1000;
-          newX = oldX + velX;
-          newY = oldY + velY;
+          
           Forcex = ((-1.0)* dragx * Math.sin(oldX));
           Forcey = ((-1.0)* dragy * Math.cos(oldY));
-
+           
+          newX = oldX + velX;
+          newY = oldY + velY;
+          
           myArraySquares[i].x = newX;
           myArraySquares[i].y = newY;
           

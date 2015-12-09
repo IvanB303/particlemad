@@ -28,6 +28,7 @@
       var bounce = 0.8; 
       var dragx = 0.05;
       var dragy = 0.1;
+      var gravity=1.0;
       // Array of Squares, sooo squareeee!!! 
       var myArraySquares = [];
       var str="";
@@ -57,6 +58,7 @@
         var newY;
         var Forcex;
         var Forcey;
+        var Fdis,Fang;
         var strg="";
         var time = (new Date()).getTime() - startTime;
        
@@ -69,9 +71,10 @@
           oldY = myArraySquares[i].y;
           velX = myArraySquares[i].vx; // * time / 1000;
           velY = myArraySquares[i].vy; // * time / 1000;
-          
-          Forcex = ((-1.0)* dragx * velX;
-          Forcey = ((-1.0)* dragy * vely;
+          Fdis = calcDistance(oldX, oldY);
+          Fang = calcAngle(oldX, oldY)
+          Forcex = (((-1.0)* dragx * velX)+(gravity*(1/(Fdis*Fdis))*Math.sin(Fang));
+          Forcey = (((-1.0)* dragy * vely)+(gravity*(1/(Fdis*Fdis))*Math.cos(Fang));
            
           newX = oldX + velX;
           newY = oldY + velY;

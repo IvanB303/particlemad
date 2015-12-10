@@ -12,6 +12,8 @@
   <body>
     <canvas id="myCanvas" width="640" height="640" style="border:1px solid #c3c3c3;"></canvas>
     <p id="test" style="color:white">Hello am I working ?</p>
+    <br>
+    <p id="test2" style="color:white">Hello am I working ?</p>
     <script>
      
       
@@ -24,11 +26,11 @@
 
       var canvas = document.getElementById('myCanvas');
       var context = canvas.getContext('2d');
-      var totPart = 2000; // MaxParticles
+      var totPart = 1000; // MaxParticles
       var bounce = 0.8; 
-      var dragx = 0.05;
-      var dragy = 0.1;
-      var gravity=1.0;
+      var dragx = 0.002;
+      var dragy = 0.005;
+      var gravity = 0.0001;
       // Array of Squares, sooo squareeee!!! 
       var myArraySquares = [];
       var str="";
@@ -36,13 +38,15 @@
       var colrswitch;
       var colstr="";
       var Fcentre={Xo: 320, Yo: 320};
+      var tst,tst2;
 
       // Array of colours 
       colors=["#FF0000","#00FF00", "#0000FF", "#5555AA", "#00ABD0", "#FF00AA"]; 
+      
       // fill the array with squares at random positions!
       fillTheArray();
      
-      str +="Type of Canvas.height is " + canvas.height;
+      str +="Type of Canvas.height is " + typeof(canvas.height);
       document.getElementById("test").innerHTML=str;
       
       
@@ -58,7 +62,7 @@
         var newY;
         var Forcex;
         var Forcey;
-        var Fdis,Fang;
+        var Fdis, Fang;
         var strg="";
         var time = (new Date()).getTime() - startTime;
        
@@ -71,10 +75,12 @@
           oldY = myArraySquares[i].y;
           velX = myArraySquares[i].vx; // * time / 1000;
           velY = myArraySquares[i].vy; // * time / 1000;
+          
           Fdis = calcDistance(oldX, oldY);
-          Fang = calcAngle(oldX, oldY)
-          Forcex = (((-1.0)* dragx * velX)+(gravity*(1/(Fdis*Fdis))*Math.sin(Fang));
-          Forcey = (((-1.0)* dragy * vely)+(gravity*(1/(Fdis*Fdis))*Math.cos(Fang));
+          Fang = calcAngle(oldX, oldY);
+
+          Forcex = (gravity/(Fdis)*Math.sin(Fang)); // ((-1.0)* dragx * velX)
+          Forcey = (gravity/(Fdis)*Math.cos(Fang)); // ((-1.0)* dragy * velY)
            
           newX = oldX + velX;
           newY = oldY + velY;
@@ -104,7 +110,7 @@
        
        // Clear the Screen! 
        
-       context.clearRect(0, 0, canvas.width, canvas.height);
+      // context.clearRect(0, 0, canvas.width, canvas.height);
       
         // Draw the screen! 
        drawRectangle(context);
@@ -124,7 +130,12 @@
         var startTime = (new Date()).getTime();
         animate(canvas, context, startTime);
       }, 100);
-
+      
+      tst=calcDistance(450, 123);
+      tst2=calcAngle(450,123);
+      str ="Distance is  " + tst + " Angle is " + tst2;
+      document.getElementById("test2").innerHTML=str;
+      
       // Function that fills the array with squares of random positions/velocities
      function fillTheArray(){
       for (var i = 0; i < totPart; i++) {
@@ -166,7 +177,8 @@
                                          } // close loop
   
       }
-     // Drawing functio for individual squares
+     
+     // Drawing function for individual squares
      function drawRectangle(context) {
         for (var i = 0; i < totPart; i++) {
         context.beginPath();
@@ -179,6 +191,7 @@
         context.stroke();
         }
       }
+
       function calcDistance(inputx, inputy){
         //calculate distance from centre
         var inputx,inputy,xbit,ybit;
@@ -189,10 +202,8 @@
         
         distance=Math.sqrt(xbit+ybit);
         
-        return distance;
-        
-        
-        
+        return distance;  
+         
       }
       function calcAngle(inputx, inputy){
         //calculate distance from centre
@@ -206,7 +217,8 @@
         
         return angle;
         
-      }
+      } 
     </script>
   </body>
 </html>      
+

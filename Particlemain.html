@@ -12,8 +12,13 @@
   <body>
     <canvas id="myCanvas" width="640" height="640" style="border:1px solid #c3c3c3;"></canvas>
     <p id="test" style="color:white">Hello am I working ?</p>
-    <br>
     <p id="test2" style="color:white">Hello am I working ?</p>
+    <p style="color:white">Move the slider to set gravity</p>
+    <input type="range" id="Gforce" max="500.0" min="10.0">
+    <br>
+    <input type="range" id="GcenX" max="640" min="0">
+    <br>
+    <input type="range" id="GcenY" max="640" min="0">
     <script>
      
       
@@ -26,18 +31,18 @@
 
       var canvas = document.getElementById('myCanvas');
       var context = canvas.getContext('2d');
-      var totPart = 1000; // MaxParticles
-      var bounce = 0.8; 
-      var dragx = 0.002;
-      var dragy = 0.005;
-      var gravity = 0.0001;
+      var totPart = 5000; // MaxParticles
+      var bounce = 0.4; 
+      var dragx = 0.05;
+      var dragy = 0.05;
+
       // Array of Squares, sooo squareeee!!! 
       var myArraySquares = [];
       var str="";
       var obj={};
       var colrswitch;
       var colstr="";
-      var Fcentre={Xo: 320, Yo: 320};
+      var Fcentre={Xo: 120, Yo: 450};
       var tst,tst2;
 
       // Array of colours 
@@ -53,7 +58,10 @@
 
         function animate(canvas, context, startTime) {
         
-  
+        var gravity = document.getElementById("Gforce").value; 
+        var gcenx = document.getElementById("GcenX").value; 
+        var gceny = document.getElementById("GcenY").value; 
+        
         var oldX;
         var oldY;
         var velX;
@@ -66,9 +74,14 @@
         var strg="";
         var time = (new Date()).getTime() - startTime;
        
+        Fcentre.Xo=gcenx; 
+        Fcentre.Yo=gceny;
+ 
         var linearSpeed = 100;
         // pixels / second
-        
+         
+         strg ="GForce is " + gravity;
+         document.getElementById("test2").innerHTML=strg;
         for (var i = 0; i < totPart; i++) {   //Main animation loop
         
           oldX = myArraySquares[i].x;
@@ -79,8 +92,8 @@
           Fdis = calcDistance(oldX, oldY);
           Fang = calcAngle(oldX, oldY);
 
-          Forcex = (gravity/(Fdis)*Math.sin(Fang)); // ((-1.0)* dragx * velX)
-          Forcey = (gravity/(Fdis)*Math.cos(Fang)); // ((-1.0)* dragy * velY)
+          Forcex = (gravity/(Fdis*Fdis)*Math.sin(Fang)); //+ ((-1.0)* dragx * velX);
+          Forcey = (gravity/(Fdis*Fdis)*Math.cos(Fang)); //+ ((-1.0)* dragy * velY);
            
           newX = oldX + velX;
           newY = oldY + velY;
@@ -110,7 +123,7 @@
        
        // Clear the Screen! 
        
-      // context.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(0, 0, canvas.width, canvas.height);
       
         // Draw the screen! 
        drawRectangle(context);
@@ -122,7 +135,7 @@
       }
        
 
-      var myRectangle = { x: 0, y: 75, width: 150, height: 100, borderWidth:2, colr: "#00FF00" };
+      var myRectangle = { x: 320, y: 320, width: 150, height: 100, borderWidth:2, colr: "#000FF0" };
       
 
       // wait 100 miliseconds second before starting animation
@@ -131,10 +144,7 @@
         animate(canvas, context, startTime);
       }, 100);
       
-      tst=calcDistance(450, 123);
-      tst2=calcAngle(450,123);
-      str ="Distance is  " + tst + " Angle is " + tst2;
-      document.getElementById("test2").innerHTML=str;
+      
       
       // Function that fills the array with squares of random positions/velocities
      function fillTheArray(){
@@ -164,12 +174,13 @@
 
       obj={x:parseInt(Math.random()*canvas.width), 
            y:parseInt(Math.random()*canvas.height), 
-           vx:(0.5*(100-(Math.random()*200))), 
-           vy:(0.5*(100-(Math.random()*200))), 
+           vx: (0.5*(10-(Math.random()*20))),                                      //
+           vy:0,  
            Fx:0,
            Fy:0, 
-           width:5, 
-           height:5, 
+           mass:(Math.random()*2),
+           width:2, 
+           height:2, 
            borderWidth:0, 
            colr: colstr};
      
@@ -181,14 +192,14 @@
      // Drawing function for individual squares
      function drawRectangle(context) {
         for (var i = 0; i < totPart; i++) {
-        context.beginPath();
+        //context.beginPath();
         context.fillStyle = myArraySquares[i].colr;
-        //context.fillRect(myArraySquares[i].x, myArraySquares[i].y, myArraySquares[i].width, myArraySquares[i].height);
-        context.rect(myArraySquares[i].x, myArraySquares[i].y, myArraySquares[i].width, myArraySquares[i].height);
-        context.fill();
-        context.lineWidth = myArraySquares[i].borderWidth;
-        context.strokeStyle = 'black';
-        context.stroke();
+        context.fillRect(myArraySquares[i].x, myArraySquares[i].y, myArraySquares[i].width, myArraySquares[i].height);
+        //context.rect(myArraySquares[i].x, myArraySquares[i].y, myArraySquares[i].width, myArraySquares[i].height);
+        //context.fill();
+        //context.lineWidth = myArraySquares[i].borderWidth;
+        //context.strokeStyle = 'black';
+        //context.stroke();
         }
       }
 
@@ -213,7 +224,7 @@
         xbit=(inputx-Fcentre.Xo);
         ybit=(inputy-Fcentre.Yo);
         
-        distance=Math.atan2(ybit,xbit);
+        angle=Math.atan2(ybit,xbit);
         
         return angle;
         

@@ -59,8 +59,8 @@
         function animate(canvas, context, startTime) {
         
         var gravity = document.getElementById("Gforce").value; 
-        var gcenx = document.getElementById("GcenX").value; 
-        var gceny = document.getElementById("GcenY").value; 
+        var gcenx = parseInt(document.getElementById("GcenX").value); 
+        var gceny = parseInt(document.getElementById("GcenY").value); 
         
         var oldX;
         var oldY;
@@ -71,6 +71,7 @@
         var Forcex;
         var Forcey;
         var Fdis, Fang;
+        var weight;
         var strg="";
         var time = (new Date()).getTime() - startTime;
        
@@ -83,7 +84,7 @@
          strg ="GForce is " + gravity;
          document.getElementById("test2").innerHTML=strg;
         for (var i = 0; i < totPart; i++) {   //Main animation loop
-        
+          weight=myArraySquares[i].mass;
           oldX = myArraySquares[i].x;
           oldY = myArraySquares[i].y;
           velX = myArraySquares[i].vx; // * time / 1000;
@@ -92,8 +93,8 @@
           Fdis = calcDistance(oldX, oldY);
           Fang = calcAngle(oldX, oldY);
 
-          Forcex = (gravity/(Fdis*Fdis)*Math.sin(Fang)); //+ ((-1.0)* dragx * velX);
-          Forcey = (gravity/(Fdis*Fdis)*Math.cos(Fang)); //+ ((-1.0)* dragy * velY);
+          Forcex = (1.0)*(gravity/(Fdis*Fdis)*Math.sin(Fang)) + ((-1.0)* dragx * velX);
+          Forcey = (1.0)*(gravity/(Fdis*Fdis)*Math.cos(Fang)) + ((-1.0)* dragy * velY);
            
           newX = oldX + velX;
           newY = oldY + velY;
@@ -101,8 +102,8 @@
           myArraySquares[i].x = newX;
           myArraySquares[i].y = newY;
           
-          myArraySquares[i].vx = velX + Forcex;
-          myArraySquares[i].vy = velY + Forcey;
+          myArraySquares[i].vx = velX + (Forcex/weight);
+          myArraySquares[i].vy = velY + (Forcey/weight);
     
         
         if ((myArraySquares[i].x >= canvas.width) || (myArraySquares[i].x <= 0)) { 
@@ -121,9 +122,9 @@
                                           }  //Close main animation loop
        
        
-       // Clear the Screen! 
+       // Clear the Screen between frames!
        
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      //context.clearRect(0, 0, canvas.width, canvas.height);
       
         // Draw the screen! 
        drawRectangle(context);
@@ -172,13 +173,13 @@
       }      
       
 
-      obj={x:parseInt(Math.random()*canvas.width), 
-           y:parseInt(Math.random()*canvas.height), 
-           vx: (0.5*(10-(Math.random()*20))),                                      //
+      obj={x:(parseInt(i/canvas.width))+160,                               //parseInt(Math.random()*canvas.width), 
+           y:((i % canvas.width)),                                        //parseInt(Math.random()*canvas.height), 
+           vx:0,                                                    // (0.5*(10-(Math.random()*20)))
            vy:0,  
            Fx:0,
            Fy:0, 
-           mass:(Math.random()*2),
+           mass:1,                                                 //(Math.random()*2),
            width:2, 
            height:2, 
            borderWidth:0, 

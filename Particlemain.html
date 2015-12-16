@@ -13,6 +13,9 @@
     <canvas id="myCanvas" width="640" height="640" style="border:1px solid #c3c3c3;"></canvas>
     <p id="test" style="color:white">Hello am I working ?</p>
     <p id="test2" style="color:white">Hello am I working ?</p>
+    <br>
+    <button onclick="saveToFile()" id="button1">Click to save picture</button>
+    <br>
     <p style="color:white">Move the slider to set gravity</p>
     <input type="range" id="Gforce" max="500.0" min="10.0">
     <br>
@@ -20,7 +23,7 @@
     <br>
     <input type="range" id="GcenY" max="640" min="0">
     <script>
-     
+            /* Particle simulation using HTML5 Canvas, with adjustable physics, Dec '15 */
       
       window.requestAnimFrame = (function(callback) {
         return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
@@ -32,8 +35,8 @@
       var canvas = document.getElementById('myCanvas');
       var context = canvas.getContext('2d');
       var totPart = 5000; // MaxParticles
-      var bounce = 0.4; 
-      var dragx = 0.05;
+      var bounce = 0.4;   // Bounce off walls
+      var dragx = 0.05;   // Viscosity 
       var dragy = 0.05;
 
       // Array of Squares, sooo squareeee!!! 
@@ -42,7 +45,7 @@
       var obj={};
       var colrswitch;
       var colstr="";
-      var Fcentre={Xo: 120, Yo: 450};
+      var Fcentre={Xo: 120, Yo: 450};   // Initial value of gravity centre position
       var tst,tst2;
 
       // Array of colours 
@@ -104,8 +107,9 @@
           
           myArraySquares[i].vx = velX + (Forcex/weight);
           myArraySquares[i].vy = velY + (Forcey/weight);
-    
         
+         // Behaviour at the walls
+ 
         if ((myArraySquares[i].x >= canvas.width) || (myArraySquares[i].x <= 0)) { 
         myArraySquares[i].vx = (velX*bounce*(-1.0));
                         }
@@ -122,7 +126,7 @@
                                           }  //Close main animation loop
        
        
-       // Clear the Screen between frames!
+       // Clear the Screen between frames! 
        
       //context.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -147,7 +151,7 @@
       
       
       
-      // Function that fills the array with squares of random positions/velocities
+      // Function that populates the array of particle objects
      function fillTheArray(){
       for (var i = 0; i < totPart; i++) {
       colrswitch = i % colors.length;
@@ -179,7 +183,7 @@
            vy:0,  
            Fx:0,
            Fy:0, 
-           mass:1,                                                 //(Math.random()*2),
+           mass:(Math.random()*2),                                                 //1,
            width:2, 
            height:2, 
            borderWidth:0, 
@@ -203,9 +207,10 @@
         //context.stroke();
         }
       }
-
+        
+      // Functions calculate distance and angle of each particle relative to gravity centre 
       function calcDistance(inputx, inputy){
-        //calculate distance from centre
+ 
         var inputx,inputy,xbit,ybit;
         var distance;
         
@@ -218,7 +223,7 @@
          
       }
       function calcAngle(inputx, inputy){
-        //calculate distance from centre
+
         var inputx,inputy,xbit,ybit;
         var angle;
         
@@ -233,4 +238,6 @@
     </script>
   </body>
 </html>      
+
+
 

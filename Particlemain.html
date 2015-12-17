@@ -14,7 +14,7 @@
     <p id="test" style="color:white">Hello am I working ?</p>
     <p id="test2" style="color:white">Hello am I working ?</p>
     <br>
-    <button onclick="saveToFile()" id="button1">Click to save picture</button>
+    <button onclick="ReversePixels()" id="button1">Click to reverse image</button>
     <br>
     <p style="color:white">Move the slider to set gravity</p>
     <input type="range" id="Gforce" max="500.0" min="10.0">
@@ -241,6 +241,37 @@
         return angle;
         
       } 
+      function ReversePixels(){
+    var canv1 = document.getElementById("myCanvas");
+    var ctx = canv1.getContext("2d"); 
+    
+    var arrwidth=canv1.width;
+    var arrheight=canv1.height;
+    var x,y,inpos,outpos;
+    Canv1Data=ctx.getImageData(0,0,arrwidth,arrheight);
+    Canv2Data=ctx.getImageData(0,0,arrwidth,arrheight);
+    for (y = 0; y < arrheight; y++) {
+        inpos = y * arrwidth * 4; // *4 for 4 ints per pixel
+        outpos = inpos
+        for (x = 0; x < arrwidth; x++) {
+            r = Canv1Data.data[inpos++];  
+            g = Canv1Data.data[inpos++];  
+            b = Canv1Data.data[inpos++]; 
+            a = Canv1Data.data[inpos++];
+
+           
+            Canv1Data.data[outpos++] = r;
+            Canv1Data.data[outpos++] = (255-g);
+            Canv1Data.data[outpos++] = b;
+            Canv1Data.data[outpos++] = a;
+          
+           
+        }
+    }
+   
+   ctx.putImageData(Canv1Data, 0, 0);    
+} 
+
     </script>
   </body>
 </html>      

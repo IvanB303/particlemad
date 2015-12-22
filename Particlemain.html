@@ -13,15 +13,22 @@
     <canvas id="myCanvas" width="640" height="640" style="border:1px solid #c3c3c3;"></canvas>
     <p id="test" style="color:white">Hello am I working ?</p>
     <p id="test2" style="color:white">Hello am I working ?</p>
-    <br>
     <button onclick="ReversePixels()" id="button1">Click to reverse image</button>
     <br>
-    <p style="color:white">Move the slider to set gravity</p>
+    <p style="color:white">Move the slider to set gravity strength</p>
     <input type="range" id="Gforce" max="500.0" min="10.0">
     <br>
+    <p style="color:white">Move the slider to set gravity centre X</p>
     <input type="range" id="GcenX" max="640" min="0">
     <br>
+    <p style="color:white">Move the slider to set gravity centre Y</p>
     <input type="range" id="GcenY" max="640" min="0">
+    <p style="color:white">Move the slider to set X viscosity</p>
+    <input type="range" id="ViscX" max="0.1" min="0.01" step="0.01">
+    <p style="color:white">Move the slider to set Y viscosity</p>
+    <input type="range" id="ViscY" max="0.1" min="0.01" step="0.01">
+    <p style="color:white">Move the slider to set wall bounce</p>
+    <input type="range" id="Bounce" max="1.00" min="0.05" step="0.05">
     <script>
             /* Particle simulation using HTML5 Canvas, with adjustable physics, Dec '15 */
       
@@ -35,9 +42,7 @@
       var canvas = document.getElementById('myCanvas');
       var context = canvas.getContext('2d');
       var totPart = 5000; // MaxParticles
-      var bounce = 0.4;   // Bounce off walls
-      var dragx = 0.05;   // Viscosity 
-      var dragy = 0.05;
+      
 
       // Array of Squares, sooo squareeee!!! 
       var myArraySquares = [];
@@ -51,7 +56,8 @@
       // Array of colours 
       colors=["#FF0000","#00FF00", "#0000FF", "#5555AA", "#00ABD0", "#FF00AA"]; 
       masses=[1,2,3,4,5,6];
-      // fill the array with squares at random positions!
+       
+      // fill the array with squares with positions, velocites and masses!
       fillTheArray();
      
       str +="Type of Canvas.height is " + typeof(canvas.height);
@@ -64,15 +70,17 @@
         var gravity = document.getElementById("Gforce").value; 
         var gcenx = parseInt(document.getElementById("GcenX").value); 
         var gceny = parseInt(document.getElementById("GcenY").value); 
-        
+        var bounce = document.getElementById("Bounce").value;  // Bounce off walls
+        var dragx = document.getElementById("ViscX").value; // Viscosity 
+        var dragy = document.getElementById("ViscY").value;
         var oldX;
         var oldY;
         var velX;
         var velY;
         var newX;
         var newY;
-        var Forcex;
-        var Forcey;
+        var Forcex,quadrX=1.0;
+        var Forcey,quadrY=1.0;
         var Fdis, Fang;
         var weight;
         var strg="";
@@ -84,8 +92,9 @@
         var linearSpeed = 100;
         // pixels / second
          
-         strg ="GForce is " + gravity;
+         strg ="Bounce is " + bounce + " ViscX is " + dragx + " ViscY is " + dragy;
          document.getElementById("test2").innerHTML=strg;
+        
         for (var i = 0; i < totPart; i++) {   //Main animation loop
           weight=myArraySquares[i].mass;
           oldX = myArraySquares[i].x;
@@ -95,18 +104,26 @@
           
           Fdis = calcDistance(oldX, oldY);
           Fang = calcAngle(oldX, oldY);
+         
+          if((gcenx-oldX) < 0){
+               quadrX=-1.0; }
 
-          Forcex = (1.0)*(gravity/(Fdis*Fdis)*Math.sin(Fang)) + ((-1.0)* dragx * velX);
-          Forcey = (1.0)*(gravity/(Fdis*Fdis)*Math.cos(Fang)) + ((-1.0)* dragy * velY);
-           
+          /* if((gceny-oldY) < 0){
+               quadrY=-1.0; } */
+
+          Forcex = (1.0)*quadrX*(gravity/(Fdis*Fdis)*Math.sin(Fang)) + ((-1.0)* dragx * velX);
+          Forcey = (1.0)*quadrY*(gravity/(Fdis*Fdis)*Math.cos(Fang)) + ((-1.0)* dragy * velY);
+          
+          myArraySquares[i].vx = velX + (Forcex/weight);
+          myArraySquares[i].vy = velY + (Forcey/weight);
+          
           newX = oldX + velX;
           newY = oldY + velY;
           
           myArraySquares[i].x = newX;
           myArraySquares[i].y = newY;
           
-          myArraySquares[i].vx = velX + (Forcex/weight);
-          myArraySquares[i].vy = velY + (Forcey/weight);
+          
         
          // Behaviour at the walls
  
@@ -114,8 +131,6 @@
         myArraySquares[i].vx = (velX*bounce*(-1.0));
                         }
 
-       // strg +="Velocity for particle is " + myArraySquares[i].vx;
-        // document.getElementById("test").innerHTML=strg;
        
         if ((myArraySquares[i].y >= canvas.height) || (myArraySquares[i].y <= 0)) { 
         myArraySquares[i].vy = (velX*bounce*(-1.0));
@@ -132,7 +147,7 @@
       
         // Draw the screen! 
        drawRectangle(context);
-
+      // drawCentreRect(myRectangle);
         // request new frame
         requestAnimFrame(function() {
           animate(canvas, context, startTime);
@@ -140,7 +155,7 @@
       }
        
 
-      var myRectangle = { x: 320, y: 320, width: 150, height: 100, borderWidth:2, colr: "#000FF0" };
+      var myRectangle = { x:320, y:320, width: 150, height: 100, borderWidth:2, colr: "#F00FF0" };
       
 
       // wait 100 miliseconds second before starting animation
@@ -183,9 +198,9 @@
       }      
       
 
-      obj={x:(parseInt(i/canvas.width))+160,                               //parseInt(Math.random()*canvas.width), 
-           y:((i % canvas.width)),                                        //parseInt(Math.random()*canvas.height), 
-           vx:0,                                                    // (0.5*(10-(Math.random()*20)))
+      obj={x:parseInt(Math.random()*canvas.width),                               // (parseInt(i/canvas.width))+160
+           y: parseInt(Math.random()*canvas.height),                             //  ((i % canvas.width)),
+           vx:0,                                                               // (0.5*(10-(Math.random()*20)))
            vy:0,  
            Fx:0,
            Fy:0, 
@@ -209,11 +224,17 @@
         //context.rect(myArraySquares[i].x, myArraySquares[i].y, myArraySquares[i].width, myArraySquares[i].height);
         //context.fill();
         //context.lineWidth = myArraySquares[i].borderWidth;
-        //context.strokeStyle = 'black';
-        //context.stroke();
+       // context.strokeStyle = 'black';
+       // context.stroke();
         }
       }
-        
+
+      function drawCentreRect(rectangle){
+      context.fillStyle = rectangle.colr;
+      context.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+      }
+
+  
       // Functions calculate distance and angle of each particle relative to gravity centre 
       function calcDistance(inputx, inputy){
  
@@ -230,13 +251,13 @@
       }
       function calcAngle(inputx, inputy){
 
-        var inputx,inputy,xbit,ybit;
+        var xbit,ybit;
         var angle;
         
-        xbit=(inputx-Fcentre.Xo);
-        ybit=(inputy-Fcentre.Yo);
+        xbit=(Fcentre.Xo-inputx);
+        ybit=(Fcentre.Yo-inputy);
         
-        angle=Math.atan2(ybit,xbit);
+        angle=Math.atan(ybit/xbit);
         
         return angle;
         
@@ -260,7 +281,7 @@
             a = Canv1Data.data[inpos++];
 
            
-            Canv1Data.data[outpos++] = r;
+            Canv1Data.data[outpos++] = (255-r);
             Canv1Data.data[outpos++] = (255-g);
             Canv1Data.data[outpos++] = b;
             Canv1Data.data[outpos++] = a;
@@ -275,6 +296,7 @@
     </script>
   </body>
 </html>      
+
 
 
 

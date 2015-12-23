@@ -16,7 +16,7 @@
     <button onclick="ReversePixels()" id="button1">Click to reverse image</button>
     <br>
     <p style="color:white">Move the slider to set gravity strength</p>
-    <input type="range" id="Gforce" max="500.0" min="10.0">
+    <input type="range" id="Gforce" max="1000.0" min="10.0">
     <br>
     <p style="color:white">Move the slider to set gravity centre X</p>
     <input type="range" id="GcenX" max="640" min="0">
@@ -51,7 +51,7 @@
       var colrswitch;
       var colstr="";
       var Fcentre={Xo: 120, Yo: 450};   // Initial value of gravity centre position
-      var tst,tst2,mss;
+      var tst,tst2,mss,quadrX,quadrY;
 
       // Array of colours 
       colors=["#FF0000","#00FF00", "#0000FF", "#5555AA", "#00ABD0", "#FF00AA"]; 
@@ -79,8 +79,8 @@
         var velY;
         var newX;
         var newY;
-        var Forcex,quadrX=1.0;
-        var Forcey,quadrY=1.0;
+        var Forcex;
+        var Forcey;
         var Fdis, Fang;
         var weight;
         var strg="";
@@ -106,13 +106,14 @@
           Fang = calcAngle(oldX, oldY);
          
           if((gcenx-oldX) < 0){
-               quadrX=-1.0; }
+               quadrX=-1; }
+            else { quadrX=1;}
+          if((gceny-oldY) < 0){
+               quadrY=-1; }
+            else { quadrY=1;}
 
-          /* if((gceny-oldY) < 0){
-               quadrY=-1.0; } */
-
-          Forcex = (1.0)*quadrX*(gravity/(Fdis*Fdis)*Math.sin(Fang)) + ((-1.0)* dragx * velX);
-          Forcey = (1.0)*quadrY*(gravity/(Fdis*Fdis)*Math.cos(Fang)) + ((-1.0)* dragy * velY);
+          Forcex = (1.0)*quadrX*(gravity/(Fdis)*Math.cos(Fang)) + ((-1.0)* dragx * velX);
+          Forcey = (1.0)*quadrY*(gravity/(Fdis)*Math.sin(Fang)) + ((-1.0)* dragy * velY);
           
           myArraySquares[i].vx = velX + (Forcex/weight);
           myArraySquares[i].vy = velY + (Forcey/weight);
@@ -198,9 +199,9 @@
       }      
       
 
-      obj={x:parseInt(Math.random()*canvas.width),                               // (parseInt(i/canvas.width))+160
-           y: parseInt(Math.random()*canvas.height),                             //  ((i % canvas.width)),
-           vx:0,                                                               // (0.5*(10-(Math.random()*20)))
+      obj={x:(parseInt(i/canvas.width))+160,                                 //     parseInt(Math.random()*canvas.width),
+           y:((i % canvas.width)),                                          //   parseInt(Math.random()*canvas.height)
+           vx:2,                                                               // (0.5*(10-(Math.random()*20)))
            vy:0,  
            Fx:0,
            Fy:0, 
@@ -257,7 +258,7 @@
         xbit=(Fcentre.Xo-inputx);
         ybit=(Fcentre.Yo-inputy);
         
-        angle=Math.atan(ybit/xbit);
+        angle=Math.atan2((Math.abs(ybit)),(Math.abs(xbit)));
         
         return angle;
         
@@ -283,7 +284,7 @@
            
             Canv1Data.data[outpos++] = (255-r);
             Canv1Data.data[outpos++] = (255-g);
-            Canv1Data.data[outpos++] = b;
+            Canv1Data.data[outpos++] = (255-b);
             Canv1Data.data[outpos++] = a;
           
            

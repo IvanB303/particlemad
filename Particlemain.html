@@ -13,7 +13,9 @@
     <canvas id="myCanvas" width="640" height="640" style="border:1px solid #c3c3c3;"></canvas>
     <p id="test" style="color:white">Hello am I working ?</p>
     <p id="test2" style="color:white">Hello am I working ?</p>
+    <p id="test3" style="color:white">Hello am I working ?</p>
     <button onclick="ReversePixels()" id="button1">Click to reverse image</button>
+    <button onclick="PersistSwitch()" id="button2">Click to turn persist on/off</button>
     <br>
     <p style="color:white">Move the slider to set gravity strength</p>
     <input type="range" id="Gforce" max="1000.0" min="10.0">
@@ -52,7 +54,7 @@
       var colstr="";
       var Fcentre={Xo: 120, Yo: 450};   // Initial value of gravity centre position
       var tst,tst2,mss,quadrX,quadrY;
-
+      var persist=0;
       // Array of colours 
       colors=["#FF0000","#00FF00", "#0000FF", "#5555AA", "#00ABD0", "#FF00AA"]; 
       masses=[1,2,3,4,5,6];
@@ -105,15 +107,15 @@
           Fdis = calcDistance(oldX, oldY);
           Fang = calcAngle(oldX, oldY);
          
-          if((gcenx-oldX) < 0){
+          /* if((gcenx-oldX) < 0){
                quadrX=-1; }
             else { quadrX=1;}
           if((gceny-oldY) < 0){
                quadrY=-1; }
-            else { quadrY=1;}
+            else { quadrY=1;} */
 
-          Forcex = (1.0)*quadrX*(gravity/(Fdis)*Math.cos(Fang)) + ((-1.0)* dragx * velX);
-          Forcey = (1.0)*quadrY*(gravity/(Fdis)*Math.sin(Fang)) + ((-1.0)* dragy * velY);
+          Forcex = (1.0)*(gravity/(Fdis)*Math.cos(Fang)) + ((-1.0)* dragx * velX);
+          Forcey = (1.0)*(gravity/(Fdis)*Math.sin(Fang)) + ((-1.0)* dragy * velY);
           
           myArraySquares[i].vx = velX + (Forcex/weight);
           myArraySquares[i].vy = velY + (Forcey/weight);
@@ -143,8 +145,8 @@
        
        
        // Clear the Screen between frames! 
-       
-      //context.clearRect(0, 0, canvas.width, canvas.height);
+       if(persist==0){
+       context.clearRect(0, 0, canvas.width, canvas.height);}
       
         // Draw the screen! 
        drawRectangle(context);
@@ -258,7 +260,7 @@
         xbit=(Fcentre.Xo-inputx);
         ybit=(Fcentre.Yo-inputy);
         
-        angle=Math.atan2((Math.abs(ybit)),(Math.abs(xbit)));
+        angle=Math.atan2(ybit,xbit);
         
         return angle;
         
@@ -293,7 +295,17 @@
    
    ctx.putImageData(Canv1Data, 0, 0);    
 } 
-
+     function PersistSwitch(){
+        var str="";
+        if(persist==1){
+           persist=0;
+           str ="Persist is OFF!";  }
+         else{
+             persist=1;
+             str ="Persist is ON!";   
+                }
+        document.getElementById("test3").innerHTML=str;
+        }
     </script>
   </body>
 </html>      

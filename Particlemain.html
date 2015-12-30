@@ -51,7 +51,7 @@
 
       // Array of Squares, sooo squareeee!!! 
       var myArraySquares = [];
-      var myArrayCentres = [{Strength:20,Xo:100, Yo:320},{Strength:1,Xo: 350, Yo:600},{Strength:20, Xo: 400, Yo:320}];
+      var myArrayCentres = [{Strength:20,Xo:100, Yo:320},{Strength:20,Xo: 350, Yo:600},{Strength:20, Xo: 400, Yo:320}];
       var str="";
       var obj={};
       var colrswitch;
@@ -121,8 +121,8 @@
           Fsumy += Forcey;
           }
           
-          myArraySquares[i].vx = velX + (Fsumx/weight);//+ ((-1.0)* dragx * velX);
-          myArraySquares[i].vy = velY + (Fsumy/weight);//+ ((-1.0)* dragy * velY);
+          myArraySquares[i].vx = velX + (Fsumx/weight) + ((-1.0)* dragx * velX);
+          myArraySquares[i].vy = velY + (Fsumy/weight) + ((-1.0)* dragy * velY);
           
           newX = oldX + velX;
           newY = oldY + velY;

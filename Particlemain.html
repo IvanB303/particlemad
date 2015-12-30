@@ -17,6 +17,9 @@
     <button onclick="ReversePixels()" id="button1">Click to reverse image</button>
     <button onclick="PersistSwitch()" id="button2">Click to turn persist on/off</button>
     <br>
+    <p style="color:white">Which gravity centre you want to move ?</p>
+    <input type="range" id="Fpntr" max="2" min="0">
+    <br>
     <p style="color:white">Move the slider to set gravity strength</p>
     <input type="range" id="Gforce" max="1000.0" min="10.0">
     <br>
@@ -44,16 +47,17 @@
       var canvas = document.getElementById('myCanvas');
       var context = canvas.getContext('2d');
       var totPart = 5000; // MaxParticles
-      
+      var totCentre = 3; //Max Centres
 
       // Array of Squares, sooo squareeee!!! 
       var myArraySquares = [];
+      var myArrayCentres = [{Strength:20,Xo:100, Yo:320},{Strength:1,Xo: 350, Yo:600},{Strength:20, Xo: 400, Yo:320}];
       var str="";
       var obj={};
       var colrswitch;
       var colstr="";
-      var Fcentre={Xo: 120, Yo: 450};   // Initial value of gravity centre position
-      var tst,tst2,mss,quadrX,quadrY;
+      // Initial value of gravity centre position
+      var tst,tst2,mss;
       var persist=0;
       // Array of colours 
       colors=["#FF0000","#00FF00", "#0000FF", "#5555AA", "#00ABD0", "#FF00AA"]; 
@@ -75,6 +79,7 @@
         var bounce = document.getElementById("Bounce").value;  // Bounce off walls
         var dragx = document.getElementById("ViscX").value; // Viscosity 
         var dragy = document.getElementById("ViscY").value;
+        var pnter = parseInt(document.getElementById("Fpntr").value); 
         var oldX;
         var oldY;
         var velX;
@@ -83,13 +88,13 @@
         var newY;
         var Forcex;
         var Forcey;
-        var Fdis, Fang;
+        var Fdis, Fang,Fsumx=0.0,Fsumy=0.0;
         var weight;
         var strg="";
         var time = (new Date()).getTime() - startTime;
        
-        Fcentre.Xo=gcenx; 
-        Fcentre.Yo=gceny;
+        myArrayCentres[pnter].Xo=gcenx; 
+        myArrayCentres[pnter].Yo=gceny;
  
         var linearSpeed = 100;
         // pixels / second
@@ -103,22 +108,21 @@
           oldY = myArraySquares[i].y;
           velX = myArraySquares[i].vx; // * time / 1000;
           velY = myArraySquares[i].vy; // * time / 1000;
-          
-          Fdis = calcDistance(oldX, oldY);
-          Fang = calcAngle(oldX, oldY);
-         
-          /* if((gcenx-oldX) < 0){
-               quadrX=-1; }
-            else { quadrX=1;}
-          if((gceny-oldY) < 0){
-               quadrY=-1; }
-            else { quadrY=1;} */
+          Fsumx=0.0,Fsumy=0.0;
 
-          Forcex = (1.0)*(gravity/(Fdis)*Math.cos(Fang)) + ((-1.0)* dragx * velX);
-          Forcey = (1.0)*(gravity/(Fdis)*Math.sin(Fang)) + ((-1.0)* dragy * velY);
+          for(var j=0; j < totCentre; j++){
+          Fdis = calcDistance(oldX, oldY, myArrayCentres[j]);
+          Fang = calcAngle(oldX, oldY, myArrayCentres[j]);
+         
+
+          Forcex = (1.0)*((myArrayCentres[j].Strength)/(Fdis)*Math.cos(Fang));
+          Forcey = (1.0)*((myArrayCentres[j].Strength)/(Fdis)*Math.sin(Fang));
+          Fsumx += Forcex;
+          Fsumy += Forcey;
+          }
           
-          myArraySquares[i].vx = velX + (Forcex/weight);
-          myArraySquares[i].vy = velY + (Forcey/weight);
+          myArraySquares[i].vx = velX + (Fsumx/weight);//+ ((-1.0)* dragx * velX);
+          myArraySquares[i].vy = velY + (Fsumy/weight);//+ ((-1.0)* dragy * velY);
           
           newX = oldX + velX;
           newY = oldY + velY;
@@ -203,13 +207,13 @@
 
       obj={x:(parseInt(i/canvas.width))+160,                                 //     parseInt(Math.random()*canvas.width),
            y:((i % canvas.width)),                                          //   parseInt(Math.random()*canvas.height)
-           vx:2,                                                               // (0.5*(10-(Math.random()*20)))
+           vx:0,                                                               // (0.5*(10-(Math.random()*20)))
            vy:0,  
            Fx:0,
            Fy:0, 
            mass: mss,                                                 //1,(Math.random()*2)
-           width:1, 
-           height:1, 
+           width:2, 
+           height:2, 
            borderWidth:0, 
            colr: colstr};
      
@@ -239,26 +243,26 @@
 
   
       // Functions calculate distance and angle of each particle relative to gravity centre 
-      function calcDistance(inputx, inputy){
+      function calcDistance(inputx, inputy,centr){
  
         var inputx,inputy,xbit,ybit;
         var distance;
         
-        xbit=Math.abs((inputx-Fcentre.Xo)*(inputx-Fcentre.Xo));
-        ybit=Math.abs((inputy-Fcentre.Yo)*(inputy-Fcentre.Yo));
+        xbit=Math.abs((inputx-centr.Xo)*(inputx-centr.Xo));
+        ybit=Math.abs((inputy-centr.Yo)*(inputy-centr.Yo));
         
         distance=Math.sqrt(xbit+ybit);
         
         return distance;  
          
       }
-      function calcAngle(inputx, inputy){
+      function calcAngle(inputx, inputy,centr){
 
         var xbit,ybit;
         var angle;
         
-        xbit=(Fcentre.Xo-inputx);
-        ybit=(Fcentre.Yo-inputy);
+        xbit=(centr.Xo-inputx);
+        ybit=(centr.Yo-inputy);
         
         angle=Math.atan2(ybit,xbit);
         

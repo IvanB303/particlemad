@@ -11,9 +11,9 @@
   </head>
   <body>
     <canvas id="myCanvas" width="640" height="640" style="border:1px solid #c3c3c3;"></canvas>
-    <p id="test" style="color:white">Hello am I working ?</p>
-    <p id="test2" style="color:white">Hello am I working ?</p>
-    <p id="test3" style="color:white">Hello am I working ?</p>
+    <p id="test" style="color:white"></p>
+    <p id="test2" style="color:white"></p>
+    <p id="test3" style="color:white"></p>
     <button onclick="ReversePixels()" id="button1">Click to reverse image</button>
     <button onclick="PersistSwitch()" id="button2">Click to turn persist on/off</button>
     <br>
@@ -67,20 +67,17 @@
       
       var tst,tst2,mss;
       var persist=0;      // Persist value is 0 for no trails ,1 for trails
-      // Array of colours 
+      // Array of particle colors and masses
       colors=["#FF0000","#00FF00", "#0000FF", "#5555AA", "#00ABD0", "#FF00AA"]; 
       masses=[1,2,3,4,5,6];
        
-      // fill the array with squares with positions, velocites and masses!
+      // fill the array with squares with positions, velocities and masses!
       fillTheArray();
      
-      str +="Type of Canvas.height is " + typeof(canvas.height);
-      document.getElementById("test").innerHTML=str;
-      
-      
-
+        //Animation function
         function animate(canvas, context, startTime) {
-        
+        // Setting up the simulation parameters
+          
         var gravity = document.getElementById("Gforce").value; 
         var gcenx = parseInt(document.getElementById("GcenX").value); 
         var gceny = parseInt(document.getElementById("GcenY").value); 
@@ -90,19 +87,14 @@
         var dragx = document.getElementById("ViscX").value; // Viscosity for X and Y
         var dragy = document.getElementById("ViscY").value;
         var pnter = parseInt(document.getElementById("Fpntr").value); 
-        var oldX;
-        var oldY;
-        var velX;
-        var velY;
-        var newX;
-        var newY;
+        var oldX, oldY, velX, velY, newX, newY;
         var Forcex;
         var Forcey;
         var Fdis, Fang,Fsumx=0.0,Fsumy=0.0;
         var weight;
         var strg="";
         var time = (new Date()).getTime() - startTime;
-       
+        // This sets which gravity centre is being changed by the slider
         myArrayCentres[pnter].Xo=gcenx; 
         myArrayCentres[pnter].Yo=gceny;
         myArrayCentres[pnter].Strength=gravity;
@@ -122,6 +114,7 @@
           velX = myArraySquares[i].vx; // * time / 1000;
           velY = myArraySquares[i].vy; // * time / 1000;
           
+          // Colisions with walls
           if ((parseInt(myArraySquares[i].x) >= canvas.width) || (parseInt(myArraySquares[i].x) <= 0)) { 
         myArraySquares[i].vx = (velX*bounce*(-1.0));
         velX = myArraySquares[i].vx;
@@ -132,9 +125,11 @@
         myArraySquares[i].vy = (velY*bounce*(-1.0));
         velY = myArraySquares[i].vy;
                         }
+          // Colision with the Bat
         if ((parseInt(myArraySquares[i].x) >= Bat.x) && (parseInt(myArraySquares[i].x) <= (Bat.x + Bat.width)) && (parseInt(myArraySquares[i].y) == Bat.y)) { 
         myArraySquares[i].vy = (velY*(-1.0));
         velY=myArraySquares[i].vy;  // Top Edge of Bat
+          
         /* str="Bat Collision! " + "Particle X is " + myArraySquares[i].x + " Particle Y is " + myArraySquares[i].y;
         document.getElementById("test").innerHTML=str; */
                         }
@@ -152,7 +147,8 @@
         myArraySquares[i].vx = (velX*(-1.0));
         velX=myArraySquares[i].vx;  //Right Edge of Bat
                                  }
-          Fsumx=0.0,Fsumy=0.0;
+          
+          Fsumx=0.0,Fsumy=0.0; // The summed x and y components of the Force each particle experiences
 
           for(var j=0; j < totCentre; j++){
           Fdis = calcDistance(oldX, oldY, myArrayCentres[j]);
@@ -172,14 +168,7 @@
           newY = oldY + velY;
           
           myArraySquares[i].x = newX;
-          myArraySquares[i].y = newY;
-          
-         // BatCollision(myArraySquares[i]);
-        
-         // Behaviour at the walls
- 
-        
-                   
+          myArraySquares[i].y = newY;               
         
                                           }  //Close main animation loop
        
@@ -253,7 +242,7 @@
            borderWidth:0, 
            colr: colstr};
      
-      myArraySquares.push(obj);     
+           myArraySquares.push(obj);     
                                          } // close loop
   
       }
@@ -305,17 +294,7 @@
         return angle;
         
       } 
-    /* function BatCollision(particle){
-     var velX, velY, str="";
-     velX=particle.vx;
-     velY=particle.vy;
-     if (((particle.x >= Bat.x) && (particle.x <= (Bat.x + Bat.width))) { 
-        particle.vy = (velY*(-1.0));  // Top Edge of Bat
-        str="Bat Collision! " + "Particle X is " + particle.x + " Particle Y is " + particle.y;
-        document.getElementbyId("test").innerHTML=str;
-                        }
-
-    } */
+   
     function ReversePixels(){
     var canv1 = document.getElementById("myCanvas");
     var ctx = canv1.getContext("2d"); 
@@ -326,7 +305,7 @@
     Canv1Data=ctx.getImageData(0,0,arrwidth,arrheight);
     Canv2Data=ctx.getImageData(0,0,arrwidth,arrheight);
     for (y = 0; y < arrheight; y++) {
-        inpos = y * arrwidth * 4; // *4 for 4 ints per pixel
+        inpos = y * arrwidth * 4; // 4 ints per pixel
         outpos = inpos
         for (x = 0; x < arrwidth; x++) {
             r = Canv1Data.data[inpos++];  
